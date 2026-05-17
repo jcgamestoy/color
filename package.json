@@ -1,0 +1,29 @@
+{
+  "name": "@retrovm/color",
+  "version": "0.1.0",
+  "description": "Immutable and mutable RGB color classes with HSV, ANSI, and named color support",
+  "author": "Juan Carlos González Amestoy",
+  "license": "MIT",
+  "type": "module",
+  "module": "src/color.ts",
+  "exports": {
+    ".": "./src/color.ts"
+  },
+  "files": [
+    "src",
+    "LICENSE"
+  ],
+  "keywords": [
+    "color",
+    "rgb",
+    "hsv",
+    "ansi",
+    "terminal"
+  ],
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
