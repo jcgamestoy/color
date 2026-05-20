@@ -1,6 +1,6 @@
 {
   "name": "@retrovm/color",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Immutable and mutable RGB color classes with HSV, ANSI, and named color support",
   "author": "Juan Carlos González Amestoy",
   "license": "MIT",

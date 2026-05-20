@@ -18,21 +18,45 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-let _colors: { [key: string]: Color } | undefined 
+let _colors: { [key: string]: Color } | undefined
 
+/**
+ * Returns the fractional part of a number.
+ * @param x Input value
+ * @returns Fractional part of x
+ */
 const fract = (x: number): number => {
   return x - Math.floor(x)
 }
 
+/**
+ * Linearly interpolates between two values.
+ * @param a Start value
+ * @param b End value
+ * @param t Interpolation factor in [0, 1]
+ * @returns Interpolated value
+ */
 const interpolate = (a: number, b: number, t: number): number => {
   return a + (b - a) * t
 }
 
+/**
+ * Clamps a value between min and max.
+ * @param x Input value
+ * @param min Lower bound (default 0)
+ * @param max Upper bound (default 1)
+ * @returns Clamped value
+ */
 const clamp = (x: number, min: number=0, max: number=1): number => {
   const c = x > min ? x : min
   return max < c ? max : c
 }
 
+/**
+ * Immutable RGBA color with components stored as floating-point values in [0, 1].
+ * Supports construction from hex strings, packed integers, and RGB(A) components.
+ * HSV components and ANSI escape sequences are computed lazily and cached.
+ */
 export class Color {
   protected _r: number
   protected _g: number
@@ -67,12 +91,23 @@ export class Color {
   constructor(r: number, g: number, b: number, a: number)
   constructor(r: number, g: number, b: number)
 
+  /**
+   * Construct a color from a single integer in the format 0xRRGGBBAA 
+   * @param c The color as a single integer in the format 0xRRGGBBAA
+   */
+  constructor(c: number)
+
   constructor(rs: number | string, g?: number, b?: number, a: number = 1.0) {
     if (typeof rs === 'number' && g !== undefined && b !== undefined) {
       this._r = rs
       this._g = g
       this._b = b
       this._a = a
+    } else if (typeof rs === 'number' && g === undefined && b === undefined) {
+      this._r = ((rs >> 24) & 0xff) / 255
+      this._g = ((rs >> 16) & 0xff) / 255
+      this._b = ((rs >> 8) & 0xff) / 255
+      this._a = (rs & 0xff) / 255
     } else if (typeof rs === 'string') {
       const match = rs.match(/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?$/i)
 
@@ -264,6 +299,19 @@ export class Color {
     this._v = undefined
     this._ansiFg = undefined
     this._ansiBg = undefined
+  }
+
+  /**
+   * Returns the color as a packed 32-bit integer in 0xRRGGBBAA format.
+   * @returns {number} Unsigned 32-bit integer representing the color
+   */
+  toRGBA(): number {
+    return (
+      (Math.round(this._r * 255) << 24 |
+       Math.round(this._g * 255) << 16 |
+       Math.round(this._b * 255) << 8  |
+       Math.round(this._a * 255)) >>> 0
+    )
   }
 
   /**
@@ -471,8 +519,14 @@ export class Color {
   static readonly yellow = new Color(1.0, 1.0, 0.0, 1.0)
   static readonly yellowGreen = new Color(0.603922, 0.803922, 0.196078, 1.0)
 
+  /** List of all named color identifiers available as static properties on {@link Color}. */
   static readonly names: string[] = ['aliceBlue', 'antiqueWhite', 'aqua', 'aquamarine', 'azure', 'beige', 'bisque', 'black', 'blanchedAlmond', 'blue', 'blueViolet', 'brown', 'burlyWood', 'cadetBlue', 'chartreuse', 'chocolate', 'coral', 'cornflowerBlue', 'cornsilk', 'crimson', 'cyan', 'darkBlue', 'darkCyan', 'darkGoldenrod', 'darkGray', 'darkGreen', 'darkKhaki', 'darkMagenta', 'darkOliveGreen', 'darkOrange', 'darkOrchid', 'darkRed', 'darkSalmon', 'darkSeaGreen', 'darkSlateBlue', 'darkSlateGray', 'darkTurquoise', 'darkViolet', 'deepPink', 'deepSkyBlue', 'dimGray', 'dodgerBlue', 'fireBrick', 'floralWhite', 'forestGreen', 'fuchsia', 'gainsboro', 'ghostWhite', 'gold', 'goldenrod', 'gray', 'green', 'greenYellow', 'honeydew', 'hotPink', 'indianRed', 'indigo', 'ivory', 'khaki', 'lavender', 'lavenderBlush', 'lawnGreen', 'lemonChiffon', 'lightBlue', 'lightCoral', 'lightCyan', 'lightGoldenrodYellow', 'lightGreen', 'lightGrey', 'lightPink', 'lightSalmon', 'lightSeaGreen', 'lightSkyBlue', 'lightSlateGray', 'lightSteelBlue', 'lightYellow', 'lime', 'limeGreen', 'linen', 'magenta', 'maroon', 'mediumAquamarine', 'mediumBlue', 'mediumOrchid', 'mediumPurple', 'mediumSeaGreen', 'mediumSlateBlue', 'mediumSpringGreen', 'mediumTurquoise', 'mediumVioletRed', 'midnightBlue', 'mintCream', 'mistyRose', 'moccasin', 'navajoWhite', 'navy', 'oldLace', 'olive', 'oliveDrab', 'orange', 'orangeRed', 'orchid', 'paleGoldenrod', 'paleGreen', 'paleTurquoise', 'paleVioletRed', 'papayaWhip', 'peachPuff', 'peru', 'pink', 'plum', 'powderBlue', 'purple', 'red', 'rosyBrown', 'royalBlue', 'saddleBrown', 'salmon', 'sandyBrown', 'seaGreen', 'seashell', 'sienna', 'silver', 'skyBlue', 'slateBlue', 'slateGray', 'snow', 'springGreen', 'steelBlue', 'tan', 'teal', 'thistle', 'tomato', 'transparent', 'turquoise', 'violet', 'wheat', 'white', 'whiteSmoke', 'yellow', 'yellowGreen']
 
+  /**
+   * Returns a dictionary mapping each color name to its {@link Color} instance.
+   * The result is computed once and cached for subsequent calls.
+   * @returns {{ [key: string]: Color }}
+   */
   static get colors() {
     if(_colors === undefined) {
       _colors = {}
@@ -490,7 +544,18 @@ export class Color {
   // #endregion
 }
 
+/**
+ * A mutable variant of {@link Color} whose RGBA components can be changed after construction.
+ * All setters invalidate the cached HSV and ANSI values automatically.
+ */
 export class MutableColor extends Color {
+  /**
+   * Construct a mutable color from RGB(A) components.
+   * @param r Red component in [0, 1]
+   * @param g Green component in [0, 1]
+   * @param b Blue component in [0, 1]
+   * @param a Alpha component in [0, 1], defaults to 1.0
+   */
   constructor(r: number, g: number, b: number, a: number = 1.0) {
     super(r, g, b, a)
   }
@@ -499,6 +564,7 @@ export class MutableColor extends Color {
     return this._r
   }
 
+  /** Sets the red component and invalidates caches. */
   override set r(r: number) {
     this._r = r
     this._invalidateCaches()
@@ -508,6 +574,7 @@ export class MutableColor extends Color {
     return this._g
   }
 
+  /** Sets the green component and invalidates caches. */
   override set g(g: number) {
     this._g = g
     this._invalidateCaches()
@@ -517,6 +584,7 @@ export class MutableColor extends Color {
     return this._b
   }
 
+  /** Sets the blue component and invalidates caches. */
   override set b(b: number) {
     this._b = b
     this._invalidateCaches()
@@ -526,6 +594,7 @@ export class MutableColor extends Color {
     return this._a
   }
 
+  /** Sets the alpha component and invalidates caches. */
   override set a(a: number) {
     this._a = a
     this._invalidateCaches()
