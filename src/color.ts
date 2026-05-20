@@ -92,8 +92,8 @@ export class Color {
   constructor(r: number, g: number, b: number)
 
   /**
-   * Construct a color from a single integer in the format 0xRRGGBBAA 
-   * @param c The color as a single integer in the format 0xRRGGBBAA
+   * Construct a color from a single integer in the format 0xAABBGGRR (little-endian)
+   * @param c The color as a single integer in the format 0xAABBGGRR
    */
   constructor(c: number)
 
@@ -104,10 +104,10 @@ export class Color {
       this._b = b
       this._a = a
     } else if (typeof rs === 'number' && g === undefined && b === undefined) {
-      this._r = ((rs >> 24) & 0xff) / 255
-      this._g = ((rs >> 16) & 0xff) / 255
-      this._b = ((rs >> 8) & 0xff) / 255
-      this._a = (rs & 0xff) / 255
+      this._r = (rs & 0xff) / 255
+      this._g = ((rs >> 8) & 0xff) / 255
+      this._b = ((rs >> 16) & 0xff) / 255
+      this._a = ((rs >> 24) & 0xff) / 255
     } else if (typeof rs === 'string') {
       const match = rs.match(/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?$/i)
 
@@ -302,15 +302,15 @@ export class Color {
   }
 
   /**
-   * Returns the color as a packed 32-bit integer in 0xRRGGBBAA format.
+   * Returns the color as a packed 32-bit integer in 0xAABBGGRR format (little-endian).
    * @returns {number} Unsigned 32-bit integer representing the color
    */
   toRGBA(): number {
     return (
-      (Math.round(this._r * 255) << 24 |
-       Math.round(this._g * 255) << 16 |
-       Math.round(this._b * 255) << 8  |
-       Math.round(this._a * 255)) >>> 0
+      (Math.round(this._a * 255) << 24 |
+       Math.round(this._b * 255) << 16 |
+       Math.round(this._g * 255) << 8  |
+       Math.round(this._r * 255)) >>> 0
     )
   }
 

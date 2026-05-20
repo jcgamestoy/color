@@ -50,7 +50,7 @@ describe('Color constructor', () => {
     expect(c.a).toBe(1)
   })
 
-  test('from integer 0xRRGGBBAA', () => {
+  test('from integer 0xAABBGGRR', () => {
     const c = new Color(0xff0000ff)
     expect(approx(c.r, 1)).toBe(true)
     expect(c.g).toBe(0)
@@ -59,7 +59,7 @@ describe('Color constructor', () => {
   })
 
   test('from integer with alpha', () => {
-    const c = new Color(0xff000080)
+    const c = new Color(0x800000ff)
     expect(approx(c.r, 1)).toBe(true)
     expect(approx(c.a, 0.502, 0.01)).toBe(true)
   })
@@ -269,8 +269,8 @@ describe('Color.toRGBA', () => {
     expect(Color.red.toRGBA()).toBe(0xff0000ff)
   })
 
-  test('black is 0x000000ff', () => {
-    expect(Color.black.toRGBA()).toBe(0x000000ff)
+  test('black is 0xff000000', () => {
+    expect(Color.black.toRGBA()).toBe(0xff000000)
   })
 
   test('white is 0xffffffff', () => {
